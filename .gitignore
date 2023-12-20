@@ -160,5 +160,7 @@ cython_debug/
 #.idea/
 
 # Output files
-audio.mp3
+voice.mp3
+clock.mp3
 /images/
+video.mp4
