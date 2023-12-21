@@ -24,8 +24,8 @@ voice = generate(
 save(voice, "voice.mp3")
 
 # Get images
-downloader.download(option1, limit=2, output_dir='images', adult_filter_off=False, force_replace=False)
-downloader.download(option2, limit=2, output_dir='images', adult_filter_off=False, force_replace=False)
+downloader.download(option1, limit=2, output_dir="images", adult_filter_off=False, force_replace=False)
+downloader.download(option2, limit=2, output_dir="images", adult_filter_off=False, force_replace=False)
 
 # Add audio to video
 clips = []
@@ -48,14 +48,15 @@ image2 = image2.set_pos("bottom")
 clips.append(image2)
 
 # Add text to video
-text1 = TextClip(option1, fontsize=70, color='white', font="Arial")
-text1 = text1.set_position(("center", 0.32), relative=True).set_duration(voice.duration + 5)
+text1 = TextClip(option1, fontsize=70, color="white", font="Arial", size=(1050, None), method="caption")
+text1 = text1.set_position(("center", 0.32), relative=True).set_duration(voice.duration + 5.5)
 clips.append(text1)
 
-text2 = TextClip(option2, fontsize=70, color='white', font="Arial")
-text2 = text2.set_position(("center", 0.55), relative=True).set_duration(voice.duration + 5)
+text2 = TextClip(option2, fontsize=70, color="white", font="Arial", size=(1050, None), method="caption")
+text2 = text2.set_position(("center", 0.55), relative=True).set_duration(voice.duration + 5.5)
 clips.append(text2)
 
+# Render video
 audio = concatenate_audioclips([voice, clock])
 video = CompositeVideoClip(clips)
 result_video = video.set_audio(audio)
