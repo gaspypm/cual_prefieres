@@ -1,11 +1,9 @@
+import os
+import PIL
 from random import randint
 from elevenlabs import voices, generate, save
 from bing_image_downloader import downloader
-from moviepy.audio.io.AudioFileClip import AudioFileClip
-from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, concatenate_audioclips
-import os
-import PIL
-from moviepy.video.VideoClip import TextClip
+from moviepy.editor import VideoFileClip, AudioFileClip, ImageClip, CompositeVideoClip, TextClip, concatenate_audioclips
 
 voices = voices()
 random_voice = randint(0, len(voices)-1)
@@ -31,30 +29,40 @@ downloader.download(option2, limit=2, output_dir="images", adult_filter_off=Fals
 clips = []
 voice = AudioFileClip("voice.mp3")
 clock = AudioFileClip("clock.mp3")
-template = VideoFileClip("template.mp4").subclip(0, voice.duration + 6)
+template = VideoFileClip("template.mp4").subclip(0, voice.duration + 8)
 clips.append(template)
 
 # Add images to video
 image1_path = os.listdir("images/" + option1)
-image1 = ImageClip("images/" + option1 + "/" + image1_path[0]).set_start(0).set_duration(voice.duration + 6)
+image1 = ImageClip("images/" + option1 + "/" + image1_path[0]).set_start(0).set_duration(voice.duration + 8)
 image1 = image1.resize((600, 600), PIL.Image.LANCZOS)
 image1 = image1.set_pos("top")
 clips.append(image1)
 
 image2_path = os.listdir("images/" + option2)
-image2 = ImageClip("images/" + option2 + "/" + image2_path[0]).set_start(0).set_duration(voice.duration + 6)
+image2 = ImageClip("images/" + option2 + "/" + image2_path[0]).set_start(0).set_duration(voice.duration + 8)
 image2 = image2.resize((600, 600), PIL.Image.LANCZOS)
 image2 = image2.set_pos("bottom")
 clips.append(image2)
 
 # Add text to video
 text1 = TextClip(option1, fontsize=70, color="white", font="Arial", size=(1050, None), method="caption")
-text1 = text1.set_position(("center", 0.32), relative=True).set_duration(voice.duration + 5.5)
+text1 = text1.set_position(("center", 0.32), relative=True).set_duration(voice.duration + 6.5)
 clips.append(text1)
 
 text2 = TextClip(option2, fontsize=70, color="white", font="Arial", size=(1050, None), method="caption")
-text2 = text2.set_position(("center", 0.55), relative=True).set_duration(voice.duration + 5.5)
+text2 = text2.set_position(("center", 0.55), relative=True).set_duration(voice.duration + 6.5)
 clips.append(text2)
+
+# Add results
+percentage = randint(30, 100)
+result1 = TextClip(str(percentage) + "%", fontsize=100, color="white", font="Arial")
+result1 = result1.set_position(("center", 0.35), relative=True).set_duration(1.5).set_start(voice.duration + 6.5)
+clips.append(result1)
+
+result2 = TextClip(str(100-percentage) + "%", fontsize=100, color="white", font="Arial")
+result2 = result2.set_position(("center", 0.60), relative=True).set_duration(1.5).set_start(voice.duration + 6.5)
+clips.append(result2)
 
 # Render video
 audio = concatenate_audioclips([voice, clock])
