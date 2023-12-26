@@ -163,4 +163,5 @@ cython_debug/
 voice.mp3
 clock.mp3
 /images/
-video.mp4
+/videos/
+videoTEMP_MPY_wvf_snd.mp4
