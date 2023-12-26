@@ -1,14 +1,17 @@
 import os
 import csv
+import spacy
 import PIL
 from random import randint
 from elevenlabs import voices, generate, save
 from bing_image_downloader import downloader
 from moviepy.editor import VideoFileClip, AudioFileClip, ImageClip, CompositeVideoClip, TextClip, concatenate_audioclips
 
-font = "Arial-Rounded-MT-Bold"
+spacy.prefer_gpu()
 voices = voices()
+font = "Arial-Rounded-MT-Bold"
 
+# Load options
 with open('test_questions.csv', newline='', encoding='utf-8') as csvfile:
     reader = csv.reader(csvfile, delimiter=';')
     next(reader)
@@ -29,8 +32,15 @@ with open('test_questions.csv', newline='', encoding='utf-8') as csvfile:
         save(voice, "voice.mp3")
 
         # Get images
-        downloader.download(option1, limit=2, output_dir="images", adult_filter_off=False, force_replace=False)
-        downloader.download(option2, limit=2, output_dir="images", adult_filter_off=False, force_replace=False)
+        nlp = spacy.load("es_core_news_sm")
+        doc1 = nlp(option1)
+        doc2 = nlp(option2)
+
+        simplified_option1 = " ".join(token.text for token in doc1 if token.pos_ in ["NOUN", "VERB"])
+        simplified_option2 = " ".join(token.text for token in doc2 if token.pos_ in ["NOUN", "VERB"])
+
+        downloader.download(simplified_option1, limit=2, output_dir="images", adult_filter_off=False, force_replace=False)
+        downloader.download(simplified_option2, limit=2, output_dir="images", adult_filter_off=False, force_replace=False)
 
         # Add audio to video
         clips = []
@@ -40,14 +50,14 @@ with open('test_questions.csv', newline='', encoding='utf-8') as csvfile:
         clips.append(template)
 
         # Add images to video
-        image1_path = os.listdir("images/" + option1)
-        image1 = ImageClip("images/" + option1 + "/" + image1_path[0]).set_start(0).set_duration(voice.duration + 8)
+        image1_path = os.listdir("images/" + simplified_option1)
+        image1 = ImageClip("images/" + simplified_option1 + "/" + image1_path[0]).set_start(0).set_duration(voice.duration + 8)
         image1 = image1.resize((600, 600), PIL.Image.LANCZOS)
         image1 = image1.set_pos("top")
         clips.append(image1)
 
-        image2_path = os.listdir("images/" + option2)
-        image2 = ImageClip("images/" + option2 + "/" + image2_path[0]).set_start(0).set_duration(voice.duration + 8)
+        image2_path = os.listdir("images/" + simplified_option2)
+        image2 = ImageClip("images/" + simplified_option2 + "/" + image2_path[0]).set_start(0).set_duration(voice.duration + 8)
         image2 = image2.resize((600, 600), PIL.Image.LANCZOS)
         image2 = image2.set_pos("bottom")
         clips.append(image2)
