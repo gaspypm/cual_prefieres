@@ -1,0 +1,5 @@
+elevenlabs
+bing-image-downloader
+moviepy
+spacy
+Pillow
